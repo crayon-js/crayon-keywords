@@ -6,7 +6,7 @@
 
 ## Usage
 ```ts
-import crayon, {...} from 'https://deno.land/x/crayon-keywords/mod.ts'; // import it instead of main crayon.js module
+import crayon, {...} from 'https://deno.land/x/crayon_keywords/mod.ts'; // import it instead of main crayon.js module
 crayon.bgKhaki.orange('This text has khaki background and orange text')
 ```
 
