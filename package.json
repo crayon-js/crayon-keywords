@@ -1,6 +1,6 @@
 {
 	"name": "@crayon.js/keywords",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "CSS Keywords extension for crayon.js",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
@@ -43,7 +43,7 @@
 		"log"
 	],
 	"scripts": {
-		"build": "tsc && node bundle.js"
+		"build": "node bundle.js; node denoify.js"
 	},
 	"files": [
 		"lib"
