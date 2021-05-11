@@ -57,7 +57,10 @@
 		"log"
 	],
 	"scripts": {
-		"build": "node bundle.js; node denoify.js"
+		"build": "node bundle.js; node denoify.js",
+		"test": "ava",
+		"coverage": "c8 ava",
+		"coverage-html": "c8 --reporter=html ava"
 	},
 	"files": [
 		"lib"
