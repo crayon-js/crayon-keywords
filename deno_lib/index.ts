@@ -7,3 +7,4 @@ addStyles(colorKeywords)
 
 export default crayon as Crayon<ColorKeyword>
 export * from 'https://deno.land/x/crayon/mod.ts'
+export { colorKeywords }
