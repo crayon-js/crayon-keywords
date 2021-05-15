@@ -5,6 +5,6 @@ import { ColorKeyword } from './types'
 
 addStyles(colorKeywords)
 
-export default crayon as Crayon<ColorKeyword>
+export default crayon as any as Crayon<ColorKeyword>
 export * from 'crayon.js'
 export { colorKeywords }
