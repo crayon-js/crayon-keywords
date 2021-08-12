@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs'
+import { Dirent } from 'node:fs'
 const importExportRegex = /\s.+\sfrom\s("|'|`)(.+(?<!\.ts))\1/
 const tsFileRegex = /^.*.ts*$/
 
@@ -18,7 +19,7 @@ fs
 		console.log(`couldn't open src/`, error)
 	})
 
-const denoify = async (file) => {
+const denoify = async (file: Dirent) => {
 	let fileContent = (await fs.readFile(`src/${file.name}`)).toString()
 
 	let importMatches = fileContent.match(importExportRegex)

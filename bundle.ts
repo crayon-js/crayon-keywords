@@ -1,6 +1,7 @@
 'use strict'
 import { exec as _exec } from 'child_process'
 import { existsSync, promises as fs } from 'fs'
+import { Dirent } from 'node:fs'
 import uglifyjs from 'uglify-js'
 import { promisify } from 'util'
 const exec = promisify(_exec)
@@ -14,7 +15,8 @@ let checkedFiles = {
 let dir = './'
 
 const commentRegex = /(\/\/.+\n)|(\/\*(.|\n)*\*\/)/g
-const importRegex = /import[\S\s]+?\s?from\s?("|'|`)((\.|\.\.)\/)+(.+(?<!\.js))\1/
+const importRegex =
+	/import[\S\s]+?\s?from\s?("|'|`)((\.|\.\.)\/)+(.+(?<!\.js))\1/
 const exportsRegex = /exports\s?=.+(;|\s|$)/
 const jsFileRegex = /^.*.js*$/
 
@@ -29,14 +31,15 @@ fs
 		data = data.replace(commentRegex, '')
 
 		checksAmount = 1
-		let tsconfig = {}
-		try {
-			tsconfig = JSON.parse(data)
-			passOperation(`Parsed tsconfig.json`)
-		} catch (error) {
-			rejectOperation(`Couldn't parse tsconfig.json:\n`, error)
-			return
-		}
+		const tsconfig = (() => {
+			try {
+				return JSON.parse(data)
+			} catch (error) {
+				return rejectOperation(error), {}
+			}
+		})()
+
+		if (tsconfig?.compilerOptions) passOperation('Parsed tsconfig.json')
 
 		dir =
 			'./' + ((tsconfig.compilerOptions && tsconfig.compilerOptions.outDir) || '')
@@ -49,7 +52,9 @@ fs
 				!(await fs
 					.rm(dir, { recursive: true })
 					.then(() => passOperation(`Deleted ${dir}`, 'initial cleaning'))
-					.catch((error) => rejectOperation(`Failed deleting ${dir}:\n`, error)))
+					.catch((error) =>
+						rejectOperation(`Failed deleting ${dir}:\n`, error.message)
+					))
 			)
 				return summary()
 		} else passOperation(`Skipped ${dir} deletion`, `doesn't exist`)
@@ -57,7 +62,9 @@ fs
 		if (
 			!(await exec('tsc')
 				.then(() => passOperation(`Compiled ${dir}`))
-				.catch((error) => rejectOperation(`Failed compiling ${dir}:\n`, error)))
+				.catch((error) =>
+					rejectOperation(`Failed compiling ${dir}:\n`, error.message)
+				))
 		)
 			return
 
@@ -83,7 +90,7 @@ fs
 		console.log(`\t ${crossmark} Failed loading tsconfig.json file:\n`, error)
 	})
 
-const minifyFile = async (file) => {
+const minifyFile = async (file: Dirent) => {
 	const fileDir = `${dir}/${file.name}`
 
 	let fileContent = (await fs.readFile(fileDir)).toString()
@@ -125,7 +132,10 @@ const minifyFile = async (file) => {
 
 	if (minifiedContent.error) {
 		fs.writeFile(fileDir, fileContent).catch(() => {})
-		return rejectOperation(`Failed minifying ${fileDir}`, minifiedContent.error)
+		return rejectOperation(
+			`Failed minifying ${fileDir}`,
+			minifiedContent.error.message
+		)
 	}
 
 	if (minifiedContent.code === '') {
@@ -141,14 +151,14 @@ const minifyFile = async (file) => {
 		.catch((error) => rejectOperation(`Failed minifying ${fileDir}:\n`, error))
 }
 
-const rejectOperation = (operation, reason) => {
+const rejectOperation = (operation: string, reason?: string) => {
 	++checkedFiles.failed
 	console.log(`\t${crossmark} ${operation}  ${reason ? `(${reason})` : ''}:`)
 	if (checkedFiles.passed + checkedFiles.failed >= checksAmount) summary()
 	return false
 }
 
-const passOperation = (operation, reason) => {
+const passOperation = (operation: string, reason?: string) => {
 	++checkedFiles.passed
 	console.log(`\t${checkmark} ${operation} ${reason ? `(${reason})` : ''}`)
 	if (checkedFiles.passed + checkedFiles.failed >= checksAmount) summary()
