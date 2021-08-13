@@ -2,7 +2,7 @@
 <hr />
 
 ## :books: About
-##### This package is extension for [crayon.js](https://github.com/crayon-js/crayon)
+##### This module is extension for [crayon](https://deno.land/x/crayon)
 
 ## Usage
 ```ts
