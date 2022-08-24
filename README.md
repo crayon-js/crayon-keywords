@@ -1,4 +1,8 @@
-<font size="6"><p align="center"><b>🖍️ Crayon.js CSS Keywords</b></p></font>
+<!-- @deprecated Extensions have been moved to https://github.com/crayon-js/crayon/tree/main/src/extensions -->
+
+<h1 align="center">DEPRECATED! <br/> Crayon extensions have been moved to https://github.com/crayon-js/crayon/tree/main/src/extensions</h1>
+
+<h1 align="center"><b>🖍️ Crayon.js CSS Keywords</b></h1>
 <hr />
 
 ## :books: About
